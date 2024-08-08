@@ -1,0 +1,3 @@
+`
+{"success":true,"data":{"email":"","name":"吴宏鑫","eid":"15587313","photoUrl":"https://static.yunzhijia.com/space/c/photo/load?id=668b64ccd3096f0001bce377","gender":"1","openId":"668b64cbe4b0b5c14db31064","wbnetworkid":"5c189dafe4b0eb9eae59ed09","wbNetworkId":"5c189dafe4b0eb9eae59ed09","wbuserid":"668b64cbe4b0b5c14db3101a","wbUserId":"668b64cbe4b0b5c14db3101a","companyName":"公元股份有限公司","jobNo":"YG27060"}}
+`

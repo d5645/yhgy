@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>qing.js</title>
+        <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+        <style>
+            .container{
+                position: absolute;
+                height: 100%; 
+                width: 100%;
+                background-color: #004098;
+            }
+
+            .card-container{
+                width: 450px;
+                height: 300px;
+                display: flex;
+                border-radius: 3px;
+                position: absolute;
+                background-color: white;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%,-50%);
+            }
+
+            .info-container{
+                padding: 5px;
+                width: 100%;
+                .el-row{
+                    padding-top: 3px;
+                    height: 25px;
+                    width: 400px;
+                    border-radius: 4px;
+                }
+            }
+        </style>
+    </head> 
+<body>
+<div id="app">
+    <div class="container">
+        <el-card class="card-container">
+            <div class="info-container">
+                <el-row>
+                    <el-col span="8">姓名:&nbsp;</el-col>
+                    <el-col span="16"><p id="name"></p> </el-col>
+                </el-row>
+                <el-row>
+                    <el-col span="8">openID:&nbsp;</el-col>
+                    <el-col span="16"><p id="id"></p> </el-col>
+                </el-row>
+                <el-row>
+                    <el-col span="8">wbUserID:&nbsp;</el-col>
+                    <el-col span="16"><p id="wbid"></p> </el-col>
+                </el-row>
+                <el-row>
+                    <el-button onclick="getUserInfo()" type="primary" >获取用户信息</el-button>
+                </el-row>
+            </div>
+        </el-card>
+    </div>
+</div>
+<script src="https://unpkg.com/vue@2/dist/vue.js"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script  src="https://static.yunzhijia.com/public/js/qing/latest/qing.js"></script>
+<script>
+    new Vue({
+        el:'#app',
+        data:function(){
+            return{visible:false}
+        }
+    })  
+    function getUserInfo(){
+        qing.call('getPersonInfo', {
+            success : (res) =>{
+                let info = res.data
+                document.getElementById('name').innerHTML = info.name
+                document.getElementById('wbid').innerHTML = info.wbuserid
+                document.getElementById('id').innerHTML = info.openId
+            },
+            error : function(e) {
+                alert("获取用户信息失败")
+            }
+        });
+    }
+</script>
+</body>
+</html>
+
+
+
