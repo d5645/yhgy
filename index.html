@@ -4,87 +4,227 @@
         <meta charset="utf-8">
         <title>qing.js</title>
         <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+        <link rel="stylesheet" href="css/login.css">
         <style>
-            .container{
-                position: absolute;
-                height: 100%; 
-                width: 100%;
-                background-color: #004098;
-            }
-
-            .card-container{
-                width: 450px;
-                height: 300px;
+            <style>
+            .el-header, .el-footer {
+                background-color: #373d41;
                 display: flex;
-                border-radius: 3px;
-                position: absolute;
-                background-color: white;
-                left: 50%;
-                top: 50%;
-                transform: translate(-50%,-50%);
-            }
-
-            .info-container{
-                padding: 5px;
-                width: 100%;
-                .el-row{
-                    padding-top: 3px;
-                    height: 25px;
-                    width: 400px;
-                    border-radius: 4px;
+                justify-content: space-between;
+                padding-left: 0;
+                align-items: center;
+                color: #fff;
+                font-size: 20px;
+                > div{
+                    display: flex;
+                    align-items: center;
+                    span{
+                        margin-left: 15px;
+                    }
                 }
             }
+
+            .el-aside {
+                background-color: #D3DCE6;
+                color: #333;
+                text-align: center;
+                line-height: 200px;
+            }
+
+            .el-main {
+                background-color: #E9EEF3;
+                color: #333;
+                text-align: center;
+                line-height: 160px;
+            }
+
+            body > .el-container {
+                margin-bottom: 40px;
+            }
+
+            .el-container:nth-child(5) .el-aside,
+            .el-container:nth-child(6) .el-aside {
+                line-height: 260px;
+            }
+
+            .el-container:nth-child(7) .el-aside {
+                line-height: 320px;
+            }
+
+            .gc-era{
+                background-color: #004098;
+            }
+        </style>
         </style>
     </head> 
 <body>
 <div id="app">
-    <div class="container">
-        <el-card class="card-container">
-            <div class="info-container">
-                <el-row>
-                    <el-col span="8">姓名:&nbsp;</el-col>
-                    <el-col span="16"><p id="name"></p> </el-col>
-                </el-row>
-                <el-row>
-                    <el-col span="8">openID:&nbsp;</el-col>
-                    <el-col span="16"><p id="id"></p> </el-col>
-                </el-row>
-                <el-row>
-                    <el-col span="8">wbUserID:&nbsp;</el-col>
-                    <el-col span="16"><p id="wbid"></p> </el-col>
-                </el-row>
-                <el-row>
-                    <el-button onclick="getUserInfo()" type="primary" >获取用户信息</el-button>
-                </el-row>
-            </div>
-        </el-card>
-    </div>
+    <router-view></router-view>
 </div>
 <script src="https://unpkg.com/vue@2/dist/vue.js"></script>
 <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script src="https://unpkg.com/vue-router@3.6.5/dist/vue-router.js"></script>
 <script  src="https://static.yunzhijia.com/public/js/qing/latest/qing.js"></script>
-<script>
+<script type="module">
+    // 配置router
+    Vue.use(VueRouter)
+    const Login = {
+        prop:['todo'],
+        template:  '#login',
+        data() {
+            return {
+                visible: false,
+                userinfo: {
+                    name: "",
+                    wbid: "",
+                    id: ""
+                },
+            }
+        },
+        methods:{
+            getUserInfo:function(){
+                qing.call('getPersonInfo', {
+                    success : (res) =>{
+                        let info = res.data
+                        this.userinfo.name = info.name
+                        this.userinfo.wbid = info.wbuserid
+                        this.userinfo.id = info.openId
+
+                        this.visible=true
+                    },
+                    error : function(e) {
+                        qing.call('toast',{
+                            "msg": "获取信息失败",
+                            "type": "error",
+                            "position": "bottom",
+                            "duration": 3
+                        })
+                    }
+                });
+
+            },
+            gotohome: function (){
+                this.$router.push('home')
+            }
+        }
+    }
+    const Home = {
+        prop:['todo'],
+        template: '#home',
+        data(){
+            return{
+
+            }
+        },
+        methods:{
+            gotoscan: function (){
+                qing.call("scanQRCode",  {
+                    "needResult":0,
+                    "isShowAlbum":true,
+                    "success": function(result) {
+
+                    }
+                });
+            }
+        }
+    }
+    const routes = [
+        {
+            path:'/',
+            name:'login',
+            component: Login
+        },
+        {
+            path: '/home',
+            name:'home',
+            component: Home
+        }
+    ]
+    const router = new VueRouter({
+        routes
+    })
+
     new Vue({
         el:'#app',
+        router,
         data:function(){
-            return{visible:false}
-        }
-    })  
-    function getUserInfo(){
-        qing.call('getPersonInfo', {
-            success : (res) =>{
-                let info = res.data
-                document.getElementById('name').innerHTML = info.name
-                document.getElementById('wbid').innerHTML = info.wbuserid
-                document.getElementById('id').innerHTML = info.openId
-            },
-            error : function(e) {
-                alert("获取用户信息失败")
+            return{
             }
-        });
-    }
+        },
+    }).$mount('#app')
+    
+
 </script>
 </body>
+<template id="login">
+    <div class="container">
+      <el-card class="card-container">
+        <div class="info-container">
+          <el-row>
+            <el-col span="8">姓名:&nbsp;</el-col>
+            <el-col span="16"><div ></div>{{userinfo.name}}</el-col>
+          </el-row>
+          <el-row>
+            <el-col span="8">openID:&nbsp;</el-col>
+            <el-col span="16"><div>{{userinfo.id}} </div> </el-col>
+          </el-row>
+          <el-row>
+            <el-col span="8">wbUserID:&nbsp;</el-col>
+            <el-col span="16"><div>{{userinfo.wbid}} </div> </el-col>
+          </el-row>
+          <el-row>
+            <el-button id="getUserInfoBtn" @click="getUserInfo()" type="primary">获取用户信息</el-button>
+            <el-button id="gohome" v-if="visible" @click="gotohome()" type = "primary" > 进入主界面</el-button>
+          </el-row>
+        </div>
+      </el-card>
+    </div>
+  </template>
+
+    <template id="home">
+        <div>
+            <el-container>
+                <el-header>
+                    <img src="./resources/image/ERA.png" style="width: 60px;height: 60px"/>
+                </el-header>
+                <el-main>
+                    <div class="main-list">
+                        <el-row gutter="20">
+                            <el-col span="8">
+                                <el-card shadow="hover">
+                                    <div class="btn-item">
+                                        <el-button type="text" style="height: 100%;width: 100%" @click="gotoscan()">
+                                            <span  >
+                                                <i class="el-icon-full-screen" >扫一扫</i>
+                                            </span>
+                                        </el-button>
+                                    </div>
+
+                                </el-card>
+                            </el-col>
+                            <el-col span="8">
+                                <el-card shadow="hover">
+
+                                </el-card>
+                            </el-col>
+                            <el-col span="8">
+                                <el-card shadow="hover">
+
+                                </el-card>
+                            </el-col>
+                        </el-row>
+
+                    </div>
+                </el-main>
+                <el-footer class="gc-era">
+                    <div style="font-size: small;">
+                        <p style="">源代码地址：<el-link href="https://github.com/d5645/yhgy" target="_blank">https://github.com/d5645/yhgy</el-link></p>
+                    </div>
+                </el-footer>
+            </el-container>
+        </div>
+
+    </template>
 </html>
 
 
