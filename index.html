@@ -6,9 +6,8 @@
         <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
         <link rel="stylesheet" href="css/login.css">
         <style>
-            <style>
             .el-header, .el-footer {
-                background-color: #373d41;
+                background-color: #dddddd;
                 display: flex;
                 justify-content: space-between;
                 padding-left: 0;
@@ -54,7 +53,6 @@
             .gc-era{
                 background-color: #004098;
             }
-        </style>
         </style>
     </head> 
 <body>
@@ -113,7 +111,8 @@
         template: '#home',
         data(){
             return{
-
+                dialogVisible:false,
+                QRCodeResult:""
             }
         },
         methods:{
@@ -122,9 +121,39 @@
                     "needResult":0,
                     "isShowAlbum":true,
                     "success": function(result) {
-
+                    },
+                    "error": function (e) {
+                        qing.call("toast",{
+                            "msg": "启动相机失败！",
+                            "type": "error"
+                        })
                     }
                 });
+            },
+            pageback(){
+                this.$router.push("/")
+            },
+            goscan(){
+                qing.call("scanQRCode",{
+                    "needResult":1,
+                    "isShowAlbum":true,
+                    "success": function (result){
+                        this.QRCodeResult = result.data.qrcode_str;
+                        this.dialogVisible = true
+                    },
+                    "error": function (e) {
+                        qing.call("toast",{
+                            "msg": "启动相机失败！",
+                            "type": "error"
+                        })
+                    }
+                })
+            },
+            gotourl(){
+                let url = this.QRCodeResult;
+                qing.call('gotoLightApp',{
+                    urlParam: url
+                })
             }
         }
     }
@@ -179,31 +208,37 @@
         </div>
       </el-card>
     </div>
-  </template>
-
-    <template id="home">
+</template>
+<template id="home">
         <div>
             <el-container>
                 <el-header>
-                    <img src="./resources/image/ERA.png" style="width: 60px;height: 60px"/>
+                    <div>
+                        <img src="./resources/image/ERA.png" style="width: 60px;height: 60px"/>
+                    </div>
+                    <el-button icon="el-icon-switch-button" @click="pageback()" >退出</el-button>
                 </el-header>
                 <el-main>
                     <div class="main-list">
                         <el-row gutter="20">
                             <el-col span="8">
                                 <el-card shadow="hover">
-                                    <div class="btn-item">
                                         <el-button type="text" style="height: 100%;width: 100%" @click="gotoscan()">
-                                            <span  >
-                                                <i class="el-icon-full-screen" >扫一扫</i>
-                                            </span>
+                                                <span>
+                                                    <i class="el-icon-full-screen" >扫一扫</i>
+                                                </span>
                                         </el-button>
-                                    </div>
-
+                                        <span style="top: 0;">通过云之家处理结果</span>
                                 </el-card>
                             </el-col>
                             <el-col span="8">
                                 <el-card shadow="hover">
+                                    <el-button type="text" style="height: 100%;width: 100%" @click="goscan()">
+                                                <span>
+                                                    <i class="el-icon-full-screen" >扫一扫</i>
+                                                </span><br><br><br>
+                                        <span style="top: 0;"><br>手动跳转页面</span><br>
+                                    </el-button>
 
                                 </el-card>
                             </el-col>
@@ -222,9 +257,19 @@
                     </div>
                 </el-footer>
             </el-container>
-        </div>
 
-    </template>
+            <el-dialog
+                    title="提示"
+                    :visible.sync="dialogVisible"
+                    width="30%">
+                <span>扫码的结果是:{{QRCodeResult}}</span>
+                <span slot="footer" class="dialog-footer">
+                    <el-button @click="dialogVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="gotourl()">确 定</el-button>
+                </span>
+            </el-dialog>
+        </div>
+</template>
 </html>
 
 
