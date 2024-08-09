@@ -138,8 +138,15 @@
                     "needResult":1,
                     "isShowAlbum":true,
                     "success": function (result){
-                        this.QRCodeResult = result.data.qrcode_str;
-                        this.dialogVisible = true
+                        if (result.success) {
+                            this.QRCodeResult = result.data.qrcode_str;
+                            this.dialogVisible = true
+                        }else {
+                            qing.call('toast',{
+                                "msg":result.error,
+                                "type": "error"
+                            })
+                        }
                     },
                     "error": function (e) {
                         qing.call("toast",{
@@ -244,7 +251,7 @@
                             </el-col>
                             <el-col span="8">
                                 <el-card shadow="hover">
-
+                                    <el-button @click="dialogVisible=true">打开dialog</el-button>
                                 </el-card>
                             </el-col>
                         </el-row>
