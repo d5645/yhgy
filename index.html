@@ -137,7 +137,7 @@
                 qing.call("scanQRCode",{
                     "needResult":1,
                     "isShowAlbum":true,
-                    "success": function (result){
+                    "success": (result) =>{
                         if (result.success) {
                             this.QRCodeResult = result.data.qrcode_str;
                             this.dialogVisible = true
